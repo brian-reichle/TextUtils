@@ -96,5 +96,21 @@ namespace TextTools.Test
 			Assert.That(pool.GetString("Bar"), Is.SameAs(bar));
 			Assert.That(pool.GetString("Baz".AsSpan()), Is.SameAs(baz));
 		}
+
+		[Test]
+		public void GrowCapacity()
+		{
+			var pool = new StringPool(3);
+			pool.GetString("A");
+			pool.GetString("B");
+			pool.GetString("C");
+			pool.GetString("D");
+
+			Assert.That(pool.TryGetString("A", out _), Is.True);
+			Assert.That(pool.TryGetString("B", out _), Is.True);
+			Assert.That(pool.TryGetString("C", out _), Is.True);
+			Assert.That(pool.TryGetString("D", out _), Is.True);
+			Assert.That(pool.TryGetString("E", out _), Is.False);
+		}
 	}
 }
