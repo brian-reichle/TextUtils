@@ -19,6 +19,11 @@ CS1591 - Missing XML comment.
 		<Authors>Brian Reichle</Authors>
 		<Product>TextTools</Product>
 		<Copyright>Copyright (c) Brian Reichle</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<PackageProjectUrl>https://github.com/brian-reichle/TextTools</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/brian-reichle/TextTools</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 
 		<OutputPath>$(MSBuildThisFileDirectory)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
