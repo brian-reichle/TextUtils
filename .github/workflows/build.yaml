@@ -35,3 +35,13 @@ jobs:
     - name: Run Tests
       if: matrix.configuration == 'Debug'
       run: dotnet test src --no-build
+    - name: Package TextTools
+      if: matrix.configuration == 'Release'
+      run: dotnet pack src --no-build --configuration ${{ matrix.configuration }} -p:RepositoryCommit=${{ github.sha }} -p:RepositoryBranch=${{ github.ref }}
+    - name: Save Artifacts
+      if: matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: bin\TextTools\${{ matrix.configuration }}\*.nupkg
+        if-no-files-found: error
