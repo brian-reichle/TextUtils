@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace TextTools
 {
@@ -83,6 +84,24 @@ namespace TextTools
 				ArrayPool<char>.Shared.Return(buffer);
 			}
 		}
+
+		public static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, object? item, ReadOnlySpan<char> format)
+		{
+			if (builder == null)
+			{
+				throw new ArgumentNullException(nameof(builder));
+			}
+
+			return item switch
+			{
+				null => builder,
+				IFormattable formattable => builder.AppendFormatted(formatProvider, formattable, format),
+				_ => builder.Append(item.ToString()),
+			};
+		}
+
+		static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, IFormattable item, ReadOnlySpan<char> format)
+			=> builder.Append(item.ToString(format.Length == 0 ? null : format.ToString(), formatProvider));
 
 		[DoesNotReturn]
 		static void InvalidFormat() => throw new FormatException("Input string was not in a correct format.");
