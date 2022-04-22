@@ -41,9 +41,11 @@ namespace TextTools.Test
 		[Test]
 		public void GetString_ExistingString()
 		{
+#pragma warning disable CA1846 // Prefer 'AsSpan' over 'Substring'
 			var pool = new StringPool();
 			var existing = pool.GetString("FooBarBaz".Substring(3, 3));
 			Assert.That(pool.GetString("BazBarFoo".Substring(3, 3)), Is.SameAs(existing));
+#pragma warning restore CA1846 // Prefer 'AsSpan' over 'Substring'
 		}
 
 		[Test]
