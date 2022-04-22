@@ -96,6 +96,7 @@ namespace TextTools.Test
 
 		static FormatScanner New(string format) => new FormatScanner(format.AsSpan());
 
+#pragma warning disable NUnit2045 // Use Assert.Multiple
 		static void AssertText(ref FormatScanner scanner, string text)
 		{
 			Assert.That(scanner.MoveNext(), Is.True, nameof(scanner.MoveNext));
@@ -118,5 +119,6 @@ namespace TextTools.Test
 		{
 			Assert.That(scanner.MoveNext(), Is.False, nameof(scanner.MoveNext));
 		}
+#pragma warning restore NUnit2045 // Use Assert.Multiple
 	}
 }
