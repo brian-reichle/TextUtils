@@ -1,9 +1,11 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Text;
 using Moq;
 using NUnit.Framework;
+using TextTools.Test.Utils;
 
 namespace TextTools.Test
 {
@@ -122,6 +124,37 @@ namespace TextTools.Test
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#FormattedToString"));
+		}
+
+		[TestCase("[Foo]", ExpectedResult = "[Foo]")]
+		[TestCase("[{{Foo}}]", ExpectedResult = "[{Foo}]")]
+		[TestCase("[{Foo}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,2}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,-2}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,5}]", ExpectedResult = "[Baz  ]")]
+		[TestCase("[{Foo,-5}]", ExpectedResult = "[  Baz]")]
+		[TestCase("[{Bar:Bob}]", ExpectedResult = "[<Bob>]")]
+		[TestCase("[{Bar,7:Bob}]", ExpectedResult = "[<Bob>  ]")]
+		[TestCase("[{Bar,-7:Bob}]", ExpectedResult = "[  <Bob>]")]
+		[TestCase("[{Bar:{{Bob}}}]", ExpectedResult = "[<{Bob}>]")]
+		public string Format(string format)
+		{
+			var mockFormatProvider = new Mock<IFormatProvider>();
+
+			var mockFormattable = new Mock<IFormattable>(MockBehavior.Strict);
+			mockFormattable
+				.Setup(x => x.ToString(It.IsAny<string>(), mockFormatProvider.Object))
+				.Returns((string f, IFormatProvider p) => "<" + f + ">");
+
+			return FormatString.Format(
+				mockFormatProvider.Object,
+				format.AsSpan(),
+				DummyArgumentProvider.Instance,
+				new Dictionary<string, object>()
+				{
+					{ "Foo", "Baz" },
+					{ "Bar", mockFormattable.Object },
+				});
 		}
 	}
 }

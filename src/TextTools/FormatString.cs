@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text;
 
 namespace TextTools
@@ -85,6 +86,30 @@ namespace TextTools
 			}
 		}
 
+		public static string Format<T>(IFormatProvider? formatProvider, ReadOnlySpan<char> format, IFormatArgumentProvider<T> argumentProvider, T data)
+		{
+			if (argumentProvider == null)
+			{
+				throw new ArgumentNullException(nameof(argumentProvider));
+			}
+
+			return AppendFormatCore(new StringBuilder(), formatProvider, format, argumentProvider, data).ToString();
+		}
+
+		public static StringBuilder AppendFormat<T>(this StringBuilder builder, IFormatProvider? formatProvider, ReadOnlySpan<char> format, IFormatArgumentProvider<T> argumentProvider, T data)
+		{
+			if (builder == null)
+			{
+				throw new ArgumentNullException(nameof(builder));
+			}
+			else if (argumentProvider == null)
+			{
+				throw new ArgumentNullException(nameof(argumentProvider));
+			}
+
+			return AppendFormatCore(builder, formatProvider, format, argumentProvider, data);
+		}
+
 		public static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, object? item, ReadOnlySpan<char> format)
 		{
 			if (builder == null)
@@ -92,22 +117,84 @@ namespace TextTools
 				throw new ArgumentNullException(nameof(builder));
 			}
 
+			return AppendValue(builder, formatProvider, item, format);
+		}
+
+		static StringBuilder AppendFormatCore<T>(StringBuilder builder, IFormatProvider? formatProvider, ReadOnlySpan<char> format, IFormatArgumentProvider<T> argumentProvider, T data)
+		{
+			var scanner = new FormatScanner(format);
+
+			while (scanner.MoveNext())
+			{
+				if (!scanner.IsArgument)
+				{
+					builder.Append(scanner.Text);
+				}
+				else
+				{
+					var value = argumentProvider.GetArgument(scanner.Text, data);
+					AppendFormatArgument(builder, formatProvider, value, scanner.ArgumentFormat, scanner.ArgumentAlignment);
+				}
+			}
+
+			return builder;
+		}
+
+		static void AppendFormatArgument(StringBuilder builder, IFormatProvider? formatProvider, object? value, ReadOnlySpan<char> argumentFormat, ReadOnlySpan<char> argumentAlignment)
+		{
+			var pos = builder.Length;
+
+			if (ContainsEscapes(argumentFormat, out var unescapedLength))
+			{
+				var buffer = ArrayPool<char>.Shared.Rent(unescapedLength);
+				var span = buffer.AsSpan(0, unescapedLength);
+				WriteUnescaped(argumentFormat, span);
+				builder.AppendValue(formatProvider, value, span);
+				ArrayPool<char>.Shared.Return(buffer);
+			}
+			else
+			{
+				builder.AppendValue(formatProvider, value, argumentFormat);
+			}
+
+			if (argumentAlignment.Length > 0)
+			{
+				if (!TryParseInt(argumentAlignment, out var alignment))
+				{
+					throw new FormatException();
+				}
+
+				var written = builder.Length - pos;
+
+				if (alignment > written)
+				{
+					builder.Append(' ', alignment - written);
+				}
+				else if (-alignment > written)
+				{
+					builder.Insert(pos, " ", -alignment - written);
+				}
+			}
+		}
+
+		static StringBuilder AppendValue(this StringBuilder builder, IFormatProvider? formatProvider, object? item, ReadOnlySpan<char> format)
+		{
 			return item switch
 			{
 				null => builder,
 #if NET6_0_OR_GREATER
-				ISpanFormattable spanFormattable => builder.AppendFormatted(formatProvider, spanFormattable, format),
+				ISpanFormattable spanFormattable => builder.AppendSpanFormattableValue(formatProvider, spanFormattable, format),
 #endif
-				IFormattable formattable => builder.AppendFormatted(formatProvider, formattable, format),
+				IFormattable formattable => builder.AppendFormattableValue(formatProvider, formattable, format),
 				_ => builder.Append(item.ToString()),
 			};
 		}
 
-		static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, IFormattable item, ReadOnlySpan<char> format)
+		static StringBuilder AppendFormattableValue(this StringBuilder builder, IFormatProvider? formatProvider, IFormattable item, ReadOnlySpan<char> format)
 			=> builder.Append(item.ToString(format.Length == 0 ? null : format.ToString(), formatProvider));
 
 #if NET6_0_OR_GREATER
-		static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, ISpanFormattable item, ReadOnlySpan<char> format)
+		static StringBuilder AppendSpanFormattableValue(this StringBuilder builder, IFormatProvider? formatProvider, ISpanFormattable item, ReadOnlySpan<char> format)
 		{
 			var size = 16;
 			var pool = ArrayPool<char>.Shared;
@@ -126,6 +213,15 @@ namespace TextTools
 			return builder;
 		}
 #endif
+
+		static bool TryParseInt(ReadOnlySpan<char> text, out int value)
+		{
+#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+			return int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
+#else
+			return int.TryParse(text.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
+#endif
+		}
 
 		[DoesNotReturn]
 		static void InvalidFormat() => throw new FormatException("Input string was not in a correct format.");
