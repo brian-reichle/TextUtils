@@ -41,25 +41,35 @@ namespace TextTools.Test
 		[Test]
 		public void GetString_ExistingString()
 		{
+#pragma warning disable CA1846 // Prefer 'AsSpan' over 'Substring'
 			var pool = new StringPool();
 			var existing = pool.GetString("FooBarBaz".Substring(3, 3));
 			Assert.That(pool.GetString("BazBarFoo".Substring(3, 3)), Is.SameAs(existing));
+#pragma warning restore CA1846 // Prefer 'AsSpan' over 'Substring'
 		}
 
 		[Test]
 		public void TryGetString_NewSpan()
 		{
 			var pool = new StringPool();
-			Assert.That(pool.TryGetString("FooBarBaz".AsSpan(3, 3), out var result), Is.False);
-			Assert.That(result, Is.Null);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool.TryGetString("FooBarBaz".AsSpan(3, 3), out var result), Is.False);
+				Assert.That(result, Is.Null);
+			});
 		}
 
 		[Test]
 		public void TestgetString_NewString()
 		{
 			var pool = new StringPool();
-			Assert.That(pool.TryGetString("Baz", out var result), Is.False);
-			Assert.That(result, Is.Null);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool.TryGetString("Baz", out var result), Is.False);
+				Assert.That(result, Is.Null);
+			});
 		}
 
 		[Test]
@@ -67,8 +77,12 @@ namespace TextTools.Test
 		{
 			var pool = new StringPool();
 			var existing = pool.GetString("Bar");
-			Assert.That(pool.TryGetString("FooBarBaz".AsSpan(3, 3), out var result), Is.True);
-			Assert.That(result, Is.SameAs(existing));
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool.TryGetString("FooBarBaz".AsSpan(3, 3), out var result), Is.True);
+				Assert.That(result, Is.SameAs(existing));
+			});
 		}
 
 		[Test]
@@ -76,8 +90,12 @@ namespace TextTools.Test
 		{
 			var pool = new StringPool();
 			var existing = pool.GetString("Bar");
-			Assert.That(pool.TryGetString("Bar", out var result), Is.True);
-			Assert.That(result, Is.SameAs(existing));
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool.TryGetString("Bar", out var result), Is.True);
+				Assert.That(result, Is.SameAs(existing));
+			});
 		}
 
 		[Test]
@@ -88,13 +106,16 @@ namespace TextTools.Test
 			var bar = pool.GetString("Bar".AsSpan());
 			var baz = pool.GetString("Baz".AsSpan());
 
-			Assert.That(foo, Is.Not.EqualTo(bar));
-			Assert.That(foo, Is.Not.EqualTo(baz));
-			Assert.That(bar, Is.Not.EqualTo(baz));
+			Assert.Multiple(() =>
+			{
+				Assert.That(foo, Is.Not.EqualTo(bar));
+				Assert.That(foo, Is.Not.EqualTo(baz));
+				Assert.That(bar, Is.Not.EqualTo(baz));
 
-			Assert.That(pool.GetString("Foo".AsSpan()), Is.SameAs(foo));
-			Assert.That(pool.GetString("Bar"), Is.SameAs(bar));
-			Assert.That(pool.GetString("Baz".AsSpan()), Is.SameAs(baz));
+				Assert.That(pool.GetString("Foo".AsSpan()), Is.SameAs(foo));
+				Assert.That(pool.GetString("Bar"), Is.SameAs(bar));
+				Assert.That(pool.GetString("Baz".AsSpan()), Is.SameAs(baz));
+			});
 		}
 
 		[Test]
@@ -106,11 +127,14 @@ namespace TextTools.Test
 			pool.GetString("C");
 			pool.GetString("D");
 
-			Assert.That(pool.TryGetString("A", out _), Is.True);
-			Assert.That(pool.TryGetString("B", out _), Is.True);
-			Assert.That(pool.TryGetString("C", out _), Is.True);
-			Assert.That(pool.TryGetString("D", out _), Is.True);
-			Assert.That(pool.TryGetString("E", out _), Is.False);
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool.TryGetString("A", out _), Is.True);
+				Assert.That(pool.TryGetString("B", out _), Is.True);
+				Assert.That(pool.TryGetString("C", out _), Is.True);
+				Assert.That(pool.TryGetString("D", out _), Is.True);
+				Assert.That(pool.TryGetString("E", out _), Is.False);
+			});
 		}
 	}
 }
