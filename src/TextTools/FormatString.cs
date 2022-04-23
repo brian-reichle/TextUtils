@@ -95,6 +95,9 @@ namespace TextTools
 			return item switch
 			{
 				null => builder,
+#if NET6_0_OR_GREATER
+				ISpanFormattable spanFormattable => builder.AppendFormatted(formatProvider, spanFormattable, format),
+#endif
 				IFormattable formattable => builder.AppendFormatted(formatProvider, formattable, format),
 				_ => builder.Append(item.ToString()),
 			};
@@ -102,6 +105,27 @@ namespace TextTools
 
 		static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, IFormattable item, ReadOnlySpan<char> format)
 			=> builder.Append(item.ToString(format.Length == 0 ? null : format.ToString(), formatProvider));
+
+#if NET6_0_OR_GREATER
+		static StringBuilder AppendFormatted(this StringBuilder builder, IFormatProvider? formatProvider, ISpanFormattable item, ReadOnlySpan<char> format)
+		{
+			var size = 16;
+			var pool = ArrayPool<char>.Shared;
+			var buffer = pool.Rent(size);
+			int written;
+
+			while (!item.TryFormat(buffer, out written, format, formatProvider))
+			{
+				size = buffer.Length * 2;
+				pool.Return(buffer);
+				buffer = pool.Rent(size);
+			}
+
+			builder.Append(buffer.AsSpan(0, written));
+			pool.Return(buffer);
+			return builder;
+		}
+#endif
 
 		[DoesNotReturn]
 		static void InvalidFormat() => throw new FormatException("Input string was not in a correct format.");

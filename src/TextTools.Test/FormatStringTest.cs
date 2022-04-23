@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace TextTools.Test
 {
 	[TestFixture]
-	class FormatStringTest
+	partial class FormatStringTest
 	{
 		[TestCase("", ExpectedResult = "")]
 		[TestCase("Foo", ExpectedResult = "Foo")]
