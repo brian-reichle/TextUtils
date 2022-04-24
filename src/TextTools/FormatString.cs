@@ -93,7 +93,7 @@ namespace TextTools
 				throw new ArgumentNullException(nameof(argumentProvider));
 			}
 
-			return AppendFormatCore(new StringBuilder(), formatProvider, format, argumentProvider, data).ToString();
+			return StringBuilderPool.ToStringAndReturn(AppendFormatCore(StringBuilderPool.Rent(), formatProvider, format, argumentProvider, data));
 		}
 
 		public static StringBuilder AppendFormat<T>(this StringBuilder builder, IFormatProvider? formatProvider, ReadOnlySpan<char> format, IFormatArgumentProvider<T> argumentProvider, T data)
