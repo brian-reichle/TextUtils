@@ -1,12 +1,16 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Text;
+using Moq;
 using NUnit.Framework;
+using TextTools.Test.Utils;
 
 namespace TextTools.Test
 {
 	[TestFixture]
-	class FormatStringTest
+	partial class FormatStringTest
 	{
 		[TestCase("", ExpectedResult = "")]
 		[TestCase("Foo", ExpectedResult = "Foo")]
@@ -36,6 +40,121 @@ namespace TextTools.Test
 			var result = buffer.AsSpan(0, len).ToString();
 			ArrayPool<char>.Shared.Return(buffer);
 			return result;
+		}
+
+		[Test]
+		public void AppendFormatted_Null()
+		{
+			var mockProvider = new Mock<IFormatProvider>(MockBehavior.Strict);
+
+			var result = FormatString.AppendFormatted(
+				new StringBuilder("#"),
+				mockProvider.Object,
+				null,
+				"Format".AsSpan())
+				.ToString();
+
+			Assert.That(result, Is.EqualTo("#"));
+		}
+
+		[Test]
+		public void AppendFormatted_String()
+		{
+			var mockProvider = new Mock<IFormatProvider>(MockBehavior.Strict);
+
+			var result = FormatString.AppendFormatted(
+				new StringBuilder("#"),
+				mockProvider.Object,
+				"Text",
+				"Format".AsSpan())
+				.ToString();
+
+			Assert.That(result, Is.EqualTo("#Text"));
+		}
+
+		[Test]
+		public void AppendFormatted_Object()
+		{
+			var mockProvider = new Mock<IFormatProvider>(MockBehavior.Strict);
+
+			var mockItem = new Mock<object>(MockBehavior.Strict);
+			mockItem.Setup(x => x.ToString()).Returns("BaseToString");
+
+			var result = FormatString.AppendFormatted(
+				new StringBuilder("#"),
+				mockProvider.Object,
+				mockItem.Object,
+				"Format".AsSpan())
+				.ToString();
+
+			Assert.That(result, Is.EqualTo("#BaseToString"));
+		}
+
+		[Test]
+		public void AppendFormatted_Formattable()
+		{
+			var mockProvider = new Mock<IFormatProvider>(MockBehavior.Strict);
+
+			var mockItem = new Mock<IFormattable>(MockBehavior.Strict);
+			mockItem.Setup(x => x.ToString("Format", mockProvider.Object)).Returns("FormattedToString");
+
+			var result = FormatString.AppendFormatted(
+				new StringBuilder("#"),
+				mockProvider.Object,
+				mockItem.Object,
+				"Format".AsSpan())
+				.ToString();
+
+			Assert.That(result, Is.EqualTo("#FormattedToString"));
+		}
+
+		[Test]
+		public void AppendFormatted_Formattable_EmptyFormat()
+		{
+			var mockProvider = new Mock<IFormatProvider>(MockBehavior.Strict);
+
+			var mockItem = new Mock<IFormattable>(MockBehavior.Strict);
+			mockItem.Setup(x => x.ToString(null, mockProvider.Object)).Returns("FormattedToString");
+
+			var result = FormatString.AppendFormatted(
+				new StringBuilder("#"),
+				mockProvider.Object,
+				mockItem.Object,
+				ReadOnlySpan<char>.Empty)
+				.ToString();
+
+			Assert.That(result, Is.EqualTo("#FormattedToString"));
+		}
+
+		[TestCase("[Foo]", ExpectedResult = "[Foo]")]
+		[TestCase("[{{Foo}}]", ExpectedResult = "[{Foo}]")]
+		[TestCase("[{Foo}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,2}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,-2}]", ExpectedResult = "[Baz]")]
+		[TestCase("[{Foo,5}]", ExpectedResult = "[Baz  ]")]
+		[TestCase("[{Foo,-5}]", ExpectedResult = "[  Baz]")]
+		[TestCase("[{Bar:Bob}]", ExpectedResult = "[<Bob>]")]
+		[TestCase("[{Bar,7:Bob}]", ExpectedResult = "[<Bob>  ]")]
+		[TestCase("[{Bar,-7:Bob}]", ExpectedResult = "[  <Bob>]")]
+		[TestCase("[{Bar:{{Bob}}}]", ExpectedResult = "[<{Bob}>]")]
+		public string Format(string format)
+		{
+			var mockFormatProvider = new Mock<IFormatProvider>();
+
+			var mockFormattable = new Mock<IFormattable>(MockBehavior.Strict);
+			mockFormattable
+				.Setup(x => x.ToString(It.IsAny<string>(), mockFormatProvider.Object))
+				.Returns((string f, IFormatProvider p) => "<" + f + ">");
+
+			return FormatString.Format(
+				mockFormatProvider.Object,
+				format.AsSpan(),
+				DummyArgumentProvider.Instance,
+				new Dictionary<string, object>()
+				{
+					{ "Foo", "Baz" },
+					{ "Bar", mockFormattable.Object },
+				});
 		}
 	}
 }
