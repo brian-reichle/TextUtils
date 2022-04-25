@@ -1,7 +1,7 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
 using NUnit.Framework;
 
-namespace TextTools.Test
+namespace TextTools.Utils.Test
 {
 	[TestFixture]
 	class StringBuilderPoolTest

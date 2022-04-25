@@ -2,7 +2,7 @@
 using System.Text;
 using NUnit.Framework;
 
-namespace TextTools.Test
+namespace TextTools.Utils.Test
 {
 	[TestFixture]
 	class MurmurHashTest
