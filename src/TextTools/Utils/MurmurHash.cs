@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace TextTools
+namespace TextTools.Utils
 {
 	static class MurmurHash
 	{

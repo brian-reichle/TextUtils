@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TextTools.Test.Utils
+namespace TextTools.Test.TestUtils
 {
 	sealed class DummyArgumentProvider : IFormatArgumentProvider<IReadOnlyDictionary<string, object>>
 	{

@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace TextTools
+namespace TextTools.Utils
 {
 	static class StringBuilderPool
 	{

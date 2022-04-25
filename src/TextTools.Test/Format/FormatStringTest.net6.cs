@@ -4,7 +4,7 @@ using System;
 using System.Text;
 using Moq;
 using NUnit.Framework;
-using TextTools.Test.Utils;
+using TextTools.Test.TestUtils;
 
 namespace TextTools.Test
 {

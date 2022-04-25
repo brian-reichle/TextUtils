@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using TextTools.Utils;
 
 namespace TextTools
 {

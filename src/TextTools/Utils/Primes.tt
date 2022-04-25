@@ -5,7 +5,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".g.cs" #>
-namespace TextTools
+namespace TextTools.Utils
 {
 	static partial class Primes
 	{
