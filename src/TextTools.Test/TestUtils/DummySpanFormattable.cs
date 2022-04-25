@@ -2,7 +2,7 @@
 #if NET6_0_OR_GREATER
 using System;
 
-namespace TextTools.Test.Utils
+namespace TextTools.Test.TestUtils
 {
 	sealed class DummySpanFormattable : ISpanFormattable
 	{
