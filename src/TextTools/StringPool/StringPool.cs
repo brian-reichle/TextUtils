@@ -102,30 +102,13 @@ namespace TextTools
 		{
 			_seed = pool._seed;
 			_count = pool._count;
-			_values = CloneArray(pool._values);
-			_hashes = CloneArray(pool._hashes);
-			_nextIndexes = CloneArray(pool._nextIndexes);
-			_firstIndexes = CloneArray(pool._firstIndexes);
+			_values = ArrayUtils.CloneArray(pool._values);
+			_hashes = ArrayUtils.CloneArray(pool._hashes);
+			_nextIndexes = ArrayUtils.CloneArray(pool._nextIndexes);
+			_firstIndexes = ArrayUtils.CloneArray(pool._firstIndexes);
 		}
 
-		static void ResetIndexes(int[] indexes)
-		{
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
-			Array.Fill(indexes, -1);
-#else
-			for (var i = 0; i < indexes.Length; i++)
-			{
-				indexes[i] = -1;
-			}
-#endif
-		}
-
-		static T[] CloneArray<T>(T[] source)
-		{
-			var result = new T[source.Length];
-			Array.Copy(source, result, source.Length);
-			return result;
-		}
+		static void ResetIndexes(int[] indexes) => ArrayUtils.Fill(indexes, -1);
 
 		bool TryGetCore(ReadOnlySpan<char> text, int hash, [NotNullWhen(true)] out string? result)
 		{
