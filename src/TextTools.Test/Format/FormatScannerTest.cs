@@ -94,7 +94,7 @@ namespace TextTools.Test
 			AssertEnd(ref scanner);
 		}
 
-		static FormatScanner New(string format) => new FormatScanner(format.AsSpan());
+		static FormatScanner New(string format) => new(format.AsSpan());
 
 #pragma warning disable NUnit2045 // Use Assert.Multiple
 		static void AssertText(ref FormatScanner scanner, string text)
