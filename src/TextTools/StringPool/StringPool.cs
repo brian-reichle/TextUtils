@@ -6,7 +6,7 @@ using TextTools.Utils;
 
 namespace TextTools
 {
-	public sealed class StringPool
+	public sealed class StringPool : ICloneable
 	{
 		public StringPool(int capacity = DefaultCapacity)
 			: this(Environment.TickCount, capacity)
@@ -94,6 +94,20 @@ namespace TextTools
 			return result;
 		}
 
+		public StringPool Clone() => new StringPool(this);
+
+		object ICloneable.Clone() => Clone();
+
+		StringPool(StringPool pool)
+		{
+			_seed = pool._seed;
+			_count = pool._count;
+			_values = CloneArray(pool._values);
+			_hashes = CloneArray(pool._hashes);
+			_nextIndexes = CloneArray(pool._nextIndexes);
+			_firstIndexes = CloneArray(pool._firstIndexes);
+		}
+
 		static void ResetIndexes(int[] indexes)
 		{
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
@@ -104,6 +118,13 @@ namespace TextTools
 				indexes[i] = -1;
 			}
 #endif
+		}
+
+		static T[] CloneArray<T>(T[] source)
+		{
+			var result = new T[source.Length];
+			Array.Copy(source, result, source.Length);
+			return result;
 		}
 
 		bool TryGetCore(ReadOnlySpan<char> text, int hash, [NotNullWhen(true)] out string? result)

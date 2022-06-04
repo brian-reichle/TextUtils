@@ -136,5 +136,31 @@ namespace TextTools.Test
 				Assert.That(pool.TryGetString("E", out _), Is.False);
 			});
 		}
+
+		[Test]
+		public void Clone()
+		{
+			var pool1 = new StringPool();
+			pool1.GetString(Text(0));
+			pool1.GetString(Text(1));
+
+			var pool2 = pool1.Clone();
+			pool2.GetString(Text(2));
+			pool1.GetString(Text(3));
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(pool2.GetString(Text(0)), Is.SameAs(pool1.GetString(Text(0))), "Cloned pool should use the same string instances (0).");
+				Assert.That(pool2.GetString(Text(1)), Is.SameAs(pool1.GetString(Text(1))), "Cloned pool should use the same string instances (1).");
+
+				Assert.That(pool1.TryGetString(Text(2), out _), Is.False, "Text(2) was not added to pool1.");
+				Assert.That(pool2.TryGetString(Text(2), out _), Is.True, "Text(2) was added to pool2.");
+
+				Assert.That(pool1.TryGetString(Text(3), out _), Is.True, "Text(3) was added to pool1.");
+				Assert.That(pool2.TryGetString(Text(3), out _), Is.False, "Text(3) was not added to pool1.");
+			});
+
+			static ReadOnlySpan<char> Text(int i) => "FooBarBazQux".AsSpan(i * 3, 3);
+		}
 	}
 }
