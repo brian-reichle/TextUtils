@@ -46,7 +46,7 @@ namespace TextTools.Utils
 		{
 			var cap = (int)Math.Sqrt(value);
 
-			for (var i = 2; i < cap; i++)
+			for (var i = 2; i <= cap; i++)
 			{
 				if (value % i == 0)
 				{
