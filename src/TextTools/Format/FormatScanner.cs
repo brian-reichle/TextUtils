@@ -106,7 +106,6 @@ namespace TextTools
 		bool MoveNextArgument()
 		{
 			var remaining = _format.Slice(_index);
-			var c = remaining[0];
 			var i = remaining.IndexOfAny(stackalloc char[] { ',', ':', '}' });
 
 			if (i < 0)
@@ -116,7 +115,7 @@ namespace TextTools
 
 			var arg = remaining.Slice(1, i - 1);
 
-			c = remaining[i];
+			var c = remaining[i];
 			_index += i + 1;
 
 			ReadOnlySpan<char> alignment;
