@@ -110,7 +110,7 @@ namespace TextTools
 
 		static void ResetIndexes(int[] indexes)
 		{
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP
+#if NET || NETSTANDARD2_1_OR_GREATER
 			Array.Fill(indexes, -1);
 #else
 			for (var i = 0; i < indexes.Length; i++)

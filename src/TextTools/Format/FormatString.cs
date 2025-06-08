@@ -183,7 +183,7 @@ namespace TextTools
 			return item switch
 			{
 				null => builder,
-#if NET6_0_OR_GREATER
+#if NET
 				ISpanFormattable spanFormattable => builder.AppendSpanFormattableValue(formatProvider, spanFormattable, format),
 #endif
 				IFormattable formattable => builder.AppendFormattableValue(formatProvider, formattable, format),
@@ -194,7 +194,7 @@ namespace TextTools
 		static StringBuilder AppendFormattableValue(this StringBuilder builder, IFormatProvider? formatProvider, IFormattable item, ReadOnlySpan<char> format)
 			=> builder.Append(item.ToString(format.Length == 0 ? null : format.ToString(), formatProvider));
 
-#if NET6_0_OR_GREATER
+#if NET
 		static StringBuilder AppendSpanFormattableValue(this StringBuilder builder, IFormatProvider? formatProvider, ISpanFormattable item, ReadOnlySpan<char> format)
 		{
 			var size = 16;
@@ -217,7 +217,7 @@ namespace TextTools
 
 		static bool TryParseInt(ReadOnlySpan<char> text, out int value)
 		{
-#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+#if NET || NETSTANDARD2_1_OR_GREATER
 			return int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
 #else
 			return int.TryParse(text.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value);

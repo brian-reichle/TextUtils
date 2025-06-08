@@ -1,5 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
-#if NET6_0_OR_GREATER
+#if NET
 using System;
 
 namespace TextTools.Test.TestUtils
