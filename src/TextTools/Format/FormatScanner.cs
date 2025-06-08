@@ -11,9 +11,9 @@ namespace TextTools
 			_format = format;
 			IsArgument = false;
 			_index = 0;
-			Text = ReadOnlySpan<char>.Empty;
-			ArgumentFormat = ReadOnlySpan<char>.Empty;
-			ArgumentAlignment = ReadOnlySpan<char>.Empty;
+			Text = [];
+			ArgumentFormat = [];
+			ArgumentAlignment = [];
 		}
 
 		public bool IsArgument { get; set; }
@@ -26,9 +26,9 @@ namespace TextTools
 			if (_index >= _format.Length)
 			{
 				IsArgument = false;
-				Text = ReadOnlySpan<char>.Empty;
-				ArgumentFormat = ReadOnlySpan<char>.Empty;
-				ArgumentAlignment = ReadOnlySpan<char>.Empty;
+				Text = [];
+				ArgumentFormat = [];
+				ArgumentAlignment = [];
 				return false;
 			}
 
@@ -46,7 +46,7 @@ namespace TextTools
 
 		static int ArgumentFormatLength(ReadOnlySpan<char> source)
 		{
-			ReadOnlySpan<char> braces = stackalloc char[] { '{', '}' };
+			ReadOnlySpan<char> braces = ['{', '}'];
 			var result = 0;
 
 			while (true)
@@ -80,7 +80,7 @@ namespace TextTools
 		bool MoveNextText()
 		{
 			var remaining = _format.Slice(_index);
-			var i = remaining.IndexOfAny(stackalloc char[] { '{', '}' });
+			var i = remaining.IndexOfAny(['{', '}']);
 
 			if (i < 0)
 			{
@@ -106,7 +106,7 @@ namespace TextTools
 		bool MoveNextArgument()
 		{
 			var remaining = _format.Slice(_index);
-			var i = remaining.IndexOfAny(stackalloc char[] { ',', ':', '}' });
+			var i = remaining.IndexOfAny([',', ':', '}']);
 
 			if (i < 0)
 			{
@@ -123,7 +123,7 @@ namespace TextTools
 			if (c == ',')
 			{
 				remaining = remaining.Slice(i + 1);
-				i = remaining.IndexOfAny(stackalloc char[] { ':', '}' });
+				i = remaining.IndexOfAny([':', '}']);
 
 				if (i < 0)
 				{
@@ -136,7 +136,7 @@ namespace TextTools
 			}
 			else
 			{
-				alignment = ReadOnlySpan<char>.Empty;
+				alignment = [];
 			}
 
 			ReadOnlySpan<char> format;
@@ -156,7 +156,7 @@ namespace TextTools
 			}
 			else
 			{
-				format = ReadOnlySpan<char>.Empty;
+				format = [];
 			}
 
 			SetArgument(arg, format, alignment);
@@ -167,8 +167,8 @@ namespace TextTools
 		{
 			Text = text;
 			IsArgument = false;
-			ArgumentFormat = ReadOnlySpan<char>.Empty;
-			ArgumentAlignment = ReadOnlySpan<char>.Empty;
+			ArgumentFormat = [];
+			ArgumentAlignment = [];
 		}
 
 		void SetArgument(ReadOnlySpan<char> arg, ReadOnlySpan<char> format, ReadOnlySpan<char> alignment)

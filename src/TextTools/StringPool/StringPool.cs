@@ -94,7 +94,7 @@ namespace TextTools
 			return result;
 		}
 
-		public StringPool Clone() => new StringPool(this);
+		public StringPool Clone() => new(this);
 
 		object ICloneable.Clone() => Clone();
 
