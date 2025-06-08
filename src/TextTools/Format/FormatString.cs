@@ -13,7 +13,7 @@ namespace TextTools
 		public static bool ContainsEscapes(ReadOnlySpan<char> formatString, out int unescapedLength)
 		{
 			unescapedLength = formatString.Length;
-			ReadOnlySpan<char> braces = stackalloc char[] { '{', '}' };
+			ReadOnlySpan<char> braces = ['{', '}'];
 
 			var i = formatString.IndexOfAny(braces);
 
@@ -40,7 +40,7 @@ namespace TextTools
 
 		public static int WriteUnescaped(ReadOnlySpan<char> formatString, Span<char> unescaped)
 		{
-			ReadOnlySpan<char> braces = stackalloc char[] { '{', '}' };
+			ReadOnlySpan<char> braces = ['{', '}'];
 
 			var i = formatString.IndexOfAny(braces);
 			var length = 0;
