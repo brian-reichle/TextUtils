@@ -19,6 +19,10 @@ namespace TextTools
 #if NET || NETSTANDARD2_1_OR_GREATER
 			return builder.Append(span);
 #else
+			// Ensure there will be enough capacity for the span before pinning,
+			// to reduce the risk of triggering a GC while span is pinned.
+			builder.EnsureCapacity(builder.Length + span.Length);
+
 			unsafe
 			{
 				fixed (char* ptr = span)
