@@ -21,7 +21,7 @@ namespace TextTools.Test
 				new StringBuilder("#"),
 				mockProvider.Object,
 				item,
-				ReadOnlySpan<char>.Empty)
+				[])
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#" + new string('x', 15)));
@@ -53,7 +53,7 @@ namespace TextTools.Test
 				new StringBuilder("#"),
 				mockProvider.Object,
 				item,
-				ReadOnlySpan<char>.Empty)
+				[])
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#" + new string('z', 40)));

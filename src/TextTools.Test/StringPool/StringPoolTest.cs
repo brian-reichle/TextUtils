@@ -11,7 +11,7 @@ namespace TextTools.Test
 		public void GetString_EmptySpan()
 		{
 			var pool = new StringPool();
-			Assert.That(pool.GetString(ReadOnlySpan<char>.Empty), Is.SameAs(string.Empty));
+			Assert.That(pool.GetString([]), Is.SameAs(string.Empty));
 		}
 
 		[Test]
