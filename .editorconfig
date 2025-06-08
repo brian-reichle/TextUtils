@@ -103,6 +103,9 @@ dotnet_diagnostic.SX1309.severity = warning
 dotnet_diagnostic.SA1400.severity = none
 dotnet_diagnostic.SA1516.severity = none
 
+# ArgumentException factory methods don't exist in all supported frameworks.
+dotnet_diagnostic.CA1510.severity = none
+
 # IDE0079 is broken and produces a lot of false-positives.
 dotnet_diagnostic.IDE0079.severity = none
 

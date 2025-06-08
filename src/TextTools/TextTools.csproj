@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard2.0;netstandard2.1;netcoreapp3.1;net6.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
@@ -49,6 +49,8 @@
     <When Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     </When>
     <When Condition="'$(TargetFramework)' == 'net6.0'">
+    </When>
+    <When Condition="'$(TargetFramework)' == 'net8.0'">
     </When>
     <Otherwise>
       <PropertyGroup>
