@@ -1,5 +1,5 @@
 // Copyright (c) Brian Reichle.  All Rights Reserved.  Licensed under the MIT License.  See License.txt in the project root for license information.
-#if NET6_0_OR_GREATER
+#if NET
 using System;
 using System.Text;
 using Moq;
@@ -21,7 +21,7 @@ namespace TextTools.Test
 				new StringBuilder("#"),
 				mockProvider.Object,
 				item,
-				ReadOnlySpan<char>.Empty)
+				[])
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#" + new string('x', 15)));
@@ -53,7 +53,7 @@ namespace TextTools.Test
 				new StringBuilder("#"),
 				mockProvider.Object,
 				item,
-				ReadOnlySpan<char>.Empty)
+				[])
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#" + new string('z', 40)));

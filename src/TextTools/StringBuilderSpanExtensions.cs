@@ -6,7 +6,7 @@ namespace TextTools
 {
 	public static class StringBuilderSpanExtensions
 	{
-#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+#if NET || NETSTANDARD2_1_OR_GREATER
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 #endif
 		public static StringBuilder Append(this StringBuilder builder, ReadOnlySpan<char> span)
@@ -16,7 +16,7 @@ namespace TextTools
 				throw new ArgumentNullException(nameof(builder));
 			}
 
-#if NETCOREAPP || NETSTANDARD2_1_OR_GREATER
+#if NET || NETSTANDARD2_1_OR_GREATER
 			return builder.Append(span);
 #else
 			unsafe

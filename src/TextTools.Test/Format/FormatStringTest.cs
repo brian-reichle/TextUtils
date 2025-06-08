@@ -120,7 +120,7 @@ namespace TextTools.Test
 				new StringBuilder("#"),
 				mockProvider.Object,
 				mockItem.Object,
-				ReadOnlySpan<char>.Empty)
+				[])
 				.ToString();
 
 			Assert.That(result, Is.EqualTo("#FormattedToString"));
