@@ -32,6 +32,8 @@ dotnet_style_explicit_tuple_names = true:suggestion
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
 
+dotnet_style_namespace_match_folder = false
+
 [*.cs]
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
@@ -100,6 +102,9 @@ dotnet_diagnostic.SA1309.severity = none
 dotnet_diagnostic.SX1309.severity = warning
 dotnet_diagnostic.SA1400.severity = none
 dotnet_diagnostic.SA1516.severity = none
+
+# IDE0079 is broken and produces a lot of false-positives.
+dotnet_diagnostic.IDE0079.severity = none
 
 [*.json]
 indent_style = space
